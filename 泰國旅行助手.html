@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>泰國公司旅行助手 🇹🇭</title>
+<meta name="theme-color" content="#0f8a6d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="泰國旅行助手">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: "Microsoft JhengHei UI", "PingFang TC", "Noto Sans TC", sans-serif;
+    background: linear-gradient(180deg, #eafaf1 0%, #f4fbf7 40%, #eef6fb 100%);
+    color: #23423a; min-height: 100vh; padding-bottom: 78px;
+  }
+  header {
+    background: linear-gradient(135deg, #0f8a6d, #13a37f 45%, #1f9ec4);
+    color: #fff; padding: 22px 18px 18px; border-radius: 0 0 26px 26px;
+    box-shadow: 0 6px 18px rgba(15,138,109,.25);
+  }
+  header h1 { font-size: 23px; }
+  header p { font-size: 13px; opacity: .94; margin-top: 4px; }
+  .nav {
+    position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+    display: flex; border-top: 1px solid #d8ede4;
+    box-shadow: 0 -4px 14px rgba(35,66,58,.08); z-index: 50;
+  }
+  .nav button {
+    flex: 1; border: none; background: none; padding: 10px 2px 8px;
+    font-size: 11.5px; color: #7a9188; cursor: pointer; font-family: inherit;
+  }
+  .nav button .ic { display: block; font-size: 21px; margin-bottom: 2px; }
+  .nav button.on { color: #0f8a6d; font-weight: 700; }
+  main { padding: 16px 14px; }
+  .page { display: none; }
+  .page.on { display: block; }
+  .card {
+    background: #fff; border-radius: 18px; padding: 14px 16px; margin-bottom: 12px;
+    box-shadow: 0 3px 10px rgba(35,66,58,.07); border: 1px solid #e4f0ea;
+  }
+  .card h2 { font-size: 16px; color: #0f8a6d; margin-bottom: 10px; }
+  .btn {
+    border: none; border-radius: 999px; padding: 10px 18px; cursor: pointer;
+    background: linear-gradient(135deg,#13a37f,#0f8a6d); color: #fff; font-size: 14px;
+    font-family: inherit; box-shadow: 0 3px 8px rgba(15,138,109,.3);
+  }
+  .btn.ghost { background: #fff; color: #0f8a6d; border: 2px solid #b9e2d4; box-shadow: none; }
+  input, select, textarea {
+    width: 100%; border: 2px solid #dcebe4; border-radius: 12px; padding: 10px 12px;
+    font-size: 14px; font-family: inherit; color: #23423a; background: #fff;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #13a37f; }
+  textarea { resize: vertical; min-height: 74px; }
+  label { font-size: 13px; color: #5b7b70; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  .row > * { flex: 1; }
+  .day-block { margin-bottom: 14px; }
+  .day-block h3 { font-size: 14.5px; color: #1f9ec4; margin-bottom: 6px; }
+  .check { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px dashed #e6f1ec; font-size: 14px; }
+  .check:last-child { border-bottom: none; }
+  .check input { width: 18px; height: 18px; margin-top: 1px; flex: none; }
+  .check.done span { text-decoration: line-through; color: #9db8ad; }
+  .cat { font-size: 12.5px; color: #0f8a6d; font-weight: 700; margin: 10px 0 2px; }
+  .ph { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px dashed #e6f1ec; align-items: flex-start; }
+  .ph:last-child { border-bottom: none; }
+  .ph .th { font-size: 15px; color: #1f9ec4; min-width: 118px; }
+  .ph .rp { font-size: 13px; color: #8b6d4f; font-style: italic; }
+  .ph .zh { font-size: 13px; color: #23423a; }
+  .ex-item { display: flex; gap: 8px; margin-bottom: 8px; }
+  .ex-item input { flex: 1; }
+  .ex-item .del { flex: none; width: 34px; border-radius: 10px; border: 1px solid #f0c9c9; color: #c0392b; background: #fff; font-size: 16px; cursor: pointer; }
+  .sum { background: #f0faf6; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; color: #23423a; margin-top: 8px; }
+  .sum b { color: #0f8a6d; }
+  .tip { background: #fff8ec; border-left: 4px solid #f0b95c; border-radius: 10px; padding: 10px 12px; font-size: 13px; margin-top: 8px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .num { text-align: right; }
+  .result { font-size: 15px; font-weight: 700; color: #0f8a6d; margin-top: 8px; }
+  .day-block.card { padding: 14px 16px; }
+  .stop { font-size: 14px; padding: 4px 0; }
+  .meals { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .chip2 { background: #eaf7f2; border: 1px solid #bfe5d6; color: #0f8a6d; border-radius: 999px; padding: 5px 10px; font-size: 12.5px; }
+  .hotel { background: #eef4fb; border-radius: 10px; padding: 8px 10px; font-size: 13px; margin: 6px 0; }
+  .detail { font-size: 13px; color: #4a6b61; background: #f7fbf9; border-radius: 10px; padding: 8px 10px; margin: 5px 0; }
+  .note2 { font-size: 12.5px; color: #7a631f; background: #fff8ec; border-left: 4px solid #f0b95c; border-radius: 8px; padding: 8px 10px; margin: 5px 0; }
+  .daytext { font-size: 13.5px; white-space: pre-wrap; color: #23423a; background: #f7fbf9; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+  .btn.small { padding: 6px 12px; font-size: 12.5px; margin-top: 8px; margin-right: 6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🇹🇭 泰國公司旅行助手</h1>
+  <p>《曼谷・華欣》五天團 ・ 2026-08-14 至 08-18 ・ 東瀛遊 EGL</p>
+</header>
+
+<nav class="nav" id="nav">
+  <button data-page="itinerary" class="on"><span class="ic">🗺️</span>行程</button>
+  <button data-page="packing"><span class="ic">🧳</span>行李</button>
+  <button data-page="money"><span class="ic">💱</span>換錢</button>
+  <button data-page="thai"><span class="ic">🇹🇭</span>泰文</button>
+  <button data-page="expense"><span class="ic">💰</span>使費</button>
+  <button data-page="info"><span class="ic">📞</span>資訊</button>
+</nav>
+
+<main>
+  <!-- 行程 -->
+  <section class="page on" id="itinerary">
+    <div class="card">
+      <h2>✈️ 航班資料（國泰航空 CX 直航）</h2>
+      <div class="ph"><div><div class="th">去程 CX705</div><div class="rp">8月14日（五）</div></div><div class="zh">香港 08:00 → 曼谷 10:00</div></div>
+      <div class="ph"><div><div class="th">回程 CX708</div><div class="rp">8月18日（二）</div></div><div class="zh">曼谷 17:30 → 香港 21:30</div></div>
+      <div class="tip">🛂 記住！泰國入境卡 TDAC 要喺出發前 3 日內（<b>8月11-13日</b>）上網填好：tdac.immigration.go.th/arrival-card</div>
+    </div>
+    <div class="card">
+      <h2>🗺️ 每日行程（詳細版・跟 PDF・可編輯）</h2>
+      <div id="days"></div>
+      <button class="btn ghost" onclick="addDay()">＋ 加多一日</button>
+    </div>
+  </section>
+
+  <!-- 行李 -->
+  <section class="page" id="packing">
+    <div class="card">
+      <h2>🧳 行李清單（㩒格仔打勾）</h2>
+      <div id="packingList"></div>
+    </div>
+  </section>
+
+  <!-- 換錢 -->
+  <section class="page" id="money">
+    <div class="card">
+      <h2>💱 泰銖兌換計算機</h2>
+      <label>匯率（出發前可以改）：</label>
+      <div class="row" style="margin-top:6px">
+        <input id="rateHkd" type="number" step="0.01" placeholder="1 HKD = ? THB">
+        <input id="rateCny" type="number" step="0.01" placeholder="1 CNY = ? THB">
+      </div>
+      <div class="tip">💡 2026 年參考匯率：1 港元 ≈ 4.5 泰銖、1 人民幣 ≈ 5 泰銖（以當日為準，市區找換店 SuperRich 通常好過機場）。</div>
+      <div style="margin-top:12px">
+        <label>輸入金額：</label>
+        <div class="row" style="margin-top:6px">
+          <input id="amt" type="number" step="0.01" placeholder="金額">
+          <select id="unit">
+            <option value="thb">泰銖 THB</option>
+            <option value="hkd">港元 HKD</option>
+            <option value="cny">人民幣 CNY</option>
+          </select>
+        </div>
+        <div class="result" id="convResult"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>🛍️ 購物計價參考</h2>
+      <div class="grid2">
+        <div class="card" style="margin:0"><label>睇到價（THB）</label><input id="shopThb" type="number" step="1" placeholder="泰銖"><div class="result" id="shopHkd"></div></div>
+        <div class="card" style="margin:0"><label>想知港幣幾多</label><div class="result" id="shopCny"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 泰文 -->
+  <section class="page" id="thai">
+    <div class="card">
+      <h2>🇹🇭 泰文速查（講唔到就俾人睇）</h2>
+      <div id="phrases"></div>
+    </div>
+  </section>
+
+  <!-- 使費 -->
+  <section class="page" id="expense">
+    <div class="card">
+      <h2>💰 使費分帳</h2>
+      <label>同行同事（用逗號隔開）：</label>
+      <input id="people" placeholder="例如：老闆,阿強,阿May,阿明">
+      <div style="height:8px"></div>
+      <label>記低一筆使費：</label>
+      <div class="row" style="margin-top:6px">
+        <input id="exItem" placeholder="項目，例如：晚餐">
+        <input id="exPayer" placeholder="邊個俾（名）">
+        <input id="exAmt" type="number" step="1" placeholder="泰銖">
+      </div>
+      <button class="btn" style="margin-top:8px;width:100%" onclick="addExpense()">＋ 記低</button>
+      <div id="exList" style="margin-top:12px"></div>
+      <div class="sum" id="exSum"></div>
+    </div>
+  </section>
+
+  <!-- 資訊 -->
+  <section class="page" id="info">
+    <div class="card">
+      <h2>📞 緊急電話（泰國）</h2>
+      <div id="emergency"></div>
+    </div>
+    <div class="card">
+      <h2>🎡 自費節目（可自由參加，泰銖）</h2>
+      <div id="optional"></div>
+    </div>
+    <div class="card">
+      <h2>✈️ 實用貼士</h2>
+      <div id="tips"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const LS = "thailandTripV2";
+
+function load() { try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch(e) { return {}; } }
+function save(d) { try { localStorage.setItem(LS, JSON.stringify(d)); } catch(e) {} }
+
+let state = load();
+if (!state.days || !state.days.length) state.days = [
+  { title: "8/14（五）第 1 日 — 香港 → 曼谷 → 華欣",
+    stops: ["✈️ CX705 08:00 香港 → 10:00 曼谷（國泰直航）", "🚌 專車前往華欣", "考銳洞", "華欣夜市（輕食：煎蠔餅）"],
+    meals: ["🍳 早餐：航機上", "🍱 午餐：紅燒豬手＋煎蠔餅（早機出發午餐自費）", "🍽️ 晚餐：泰式料理"],
+    hotel: "🏨 Ace of Hua Hin Resort（華欣5星，連續兩晚）",
+    details: [],
+    notes: ["📌 你哋搭 08:00 早機，即係第一天午餐自費", "📌 因應航班及酒店安排，可能先住宿曼谷後華欣，以當地接待為準"] },
+  { title: "8/15（六）第 2 日 — 華欣",
+    stops: ["華欣古老火車站", "高僧廟「龍普矺」（香火鼎盛）", "Bluport Hua Hin Shopping Mall 自由購物", "下午自由活動（包享用一次下午茶）", "ACE 水耕農場（自費採摘蔬菜）", "Air Space 玻璃屋（網紅打卡點）"],
+    meals: ["🍳 早餐：酒店內自助早餐", "🍱 午餐：自費享用喜愛膳食", "🍽️ 晚餐：Air Space 泰式料理"],
+    hotel: "🏨 Ace of Hua Hin Resort（第二晚）",
+    details: ["💡 Air Space 玻璃屋：以飛航為主題嘅玻璃屋餐廳，曾獲國外建築設計大獎，係華欣超熱門打卡熱點，可以品嚐特色泰式料理。", "💡 ACE 水耕農場：酒店內農場，種植綠橡/紅橡生菜等水耕蔬菜同泰國草藥；自費採摘由廚師按選定菜單烹煮，一盤約 150-200 銖。"],
+    notes: [] },
+  { title: "8/16（日）第 3 日 — 華欣 → 曼谷",
+    stops: ["拷汪宮歷史公園（七岩地標）", "佛統大塔", "吞武里海鮮生果市場", "Jodd Fairs Ratchada 夜市"],
+    meals: ["🍳 早餐：酒店內自助早餐", "🍱 午餐：檸檬蒸魚＋椰青咖哩海鮮", "🍽️ 晚餐：香脆炸豬腿＋冬陰功湯"],
+    hotel: "🏨 曼谷5星酒店（連續兩晚）：Oakwood Studios Sukhumvit Bangkok / The Berkeley Hotel Pratunam / Jasmine 59 Hotel / Jasmine Resort Hotel",
+    details: ["💡 拷汪宮歷史公園：七岩地標，位於「宮殿山」92米高山之上，泰王拉瑪四世下令建造；園區由皇室大廳、廟宇及塔樓組成，融合泰式、西方新古典主義同中國建築特色。", "💡 吞武里海鮮生果市場：約500間店舖，地道街頭美食、新鮮海產即買即煮，時令水果又甜又多汁。"],
+    notes: [] },
+  { title: "8/17（一）第 4 日 — 曼谷",
+    stops: ["佛光山寺", "天然乳膠專門店", "GEMS 珠寶城", "Central Park Bangkok（全新地標）"],
+    meals: ["🍳 早餐：酒店內自助早餐", "🍱 午餐：烤鴨＋蝦餅", "🍽️ 晚餐：自費享用喜愛膳食"],
+    hotel: "🏨 曼谷5星酒店（第二晚）",
+    details: ["💡 Central Park Bangkok：2025年9月1日開幕，曼谷核心區最大商業綜合項目，佔地8層，集酒店、商場於一身；最大特色係頂樓空中花園，仲有首次登陸泰國嘅國際餐廳、新概念餐廳，以及全曼谷最多嘅米其林推薦店家，超過550個國際與本土品牌。"],
+    notes: [] },
+  { title: "8/18（二）第 5 日 — 曼谷 → 香港",
+    stops: ["蜂皇園", "✈️ 17:30 航班前，如有時間去 Central Outlets 自由購物", "✈️ CX708 17:30 曼谷 → 21:30 香港"],
+    meals: ["🍳 早餐：酒店內自助早餐", "🍱 午餐：自費享用喜愛膳食", "🍽️ 晚餐：航機上"],
+    hotel: "",
+    details: [],
+    notes: ["📌 因航班係 17:30（16:00 之後），會安排去 Central Outlets 自由購物再前往機場"] }
+];
+if (!state.packing) state.packing = [
+  ["📄 證件", ["護照（+影印本分開放）", "泰國入境卡 TDAC（8/11-13 上網填好）", "簽證/免簽確認", "機票、酒店確認單", "旅遊保險", "公司名片", "緊急聯絡卡"]],
+  ["💵 現金", ["泰銖現金", "港幣/人民幣後備", "信用卡、銀聯卡"]],
+  ["👕 衣物", ["短袖、輕薄衫", "沙灘褲/泳衣", "薄外套（商場/飛機凍）", "舒適鞋、涼鞋", "帽、太陽眼鏡"]],
+  ["🔌 電子", ["手機、充電器", "萬能轉插（泰國兩腳）", "尿袋", "相機/自拍棍", "防水袋"]],
+  ["💊 藥品", ["暈浪丸", "腸胃藥", "退燒/止痛", "蚊怕水", "膠布", "防敏感藥"]],
+  ["🏷️ 公司用品", ["產品樣辦", "目錄/報價單", "名片（帶夠）", "筆記簿"]],
+  ["🧴 其他", ["保溫水樽", "紙巾、濕紙巾", "防曬", "購物袋", "零食"]]
+];
+state.done = state.done || {};
+if (!state.expenses) state.expenses = [];
+if (!state.people) state.people = "老闆,阿強,阿May,阿明";
+save(state);
+
+/* ---- 分頁 ---- */
+document.querySelectorAll("#nav button").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("#nav button").forEach(x => x.classList.remove("on"));
+    document.querySelectorAll(".page").forEach(x => x.classList.remove("on"));
+    b.classList.add("on");
+    document.getElementById(b.dataset.page).classList.add("on");
+  };
+});
+
+/* ---- 行程 ---- */
+function flattenDay(d) {
+  const lines = [d.title];
+  (d.stops || []).forEach(s => lines.push("📍 " + s));
+  (d.meals || []).forEach(m => lines.push(m));
+  if (d.hotel) lines.push(d.hotel);
+  (d.details || []).forEach(x => lines.push(x));
+  (d.notes || []).forEach(n => lines.push(n));
+  return lines.join("\n");
+}
+function renderDays() {
+  const box = document.getElementById("days");
+  box.innerHTML = "";
+  state.days.forEach((d, i) => {
+    const el = document.createElement("div");
+    el.className = "day-block card";
+    let inner = '<h3>📅 ' + esc(d.title) + '</h3>';
+    if (d.custom) {
+      inner += '<div class="daytext">' + esc(d.custom).replace(/\n/g, "<br>") + "</div>";
+    } else {
+      if (d.stops && d.stops.length) inner += d.stops.map(s => '<div class="stop">📍 ' + esc(s) + "</div>").join("");
+      if (d.meals && d.meals.length) inner += '<div class="meals">' + d.meals.map(m => '<span class="chip2">' + esc(m) + "</span>").join("") + "</div>";
+      if (d.hotel) inner += '<div class="hotel">🏨 ' + esc(d.hotel) + "</div>";
+      if (d.details && d.details.length) inner += d.details.map(x => '<div class="detail">' + esc(x) + "</div>").join("");
+      if (d.notes && d.notes.length) inner += d.notes.map(n => '<div class="note2">' + esc(n) + "</div>").join("");
+    }
+    inner += '<button class="btn ghost small" data-i="' + i + '" data-act="edit">✏️ 編輯</button>';
+    if (d.custom) inner += '<button class="btn ghost small" data-i="' + i + '" data-act="reset">↺ 還原官方行程</button>';
+    el.innerHTML = inner;
+    box.appendChild(el);
+  });
+  box.querySelectorAll("button[data-act]").forEach(b => {
+    b.onclick = () => {
+      const i = +b.dataset.i;
+      const d = state.days[i];
+      if (b.dataset.act === "edit") {
+        const ta = document.createElement("textarea");
+        ta.value = d.custom || flattenDay(d);
+        ta.style.minHeight = "150px";
+        const saveBtn = document.createElement("button");
+        saveBtn.className = "btn";
+        saveBtn.textContent = "✅ 儲存";
+        saveBtn.style.marginTop = "8px";
+        saveBtn.onclick = () => { d.custom = ta.value; save(state); renderDays(); };
+        const wrap = document.createElement("div");
+        wrap.appendChild(ta);
+        wrap.appendChild(saveBtn);
+        b.parentNode.replaceChild(wrap, b);
+      } else if (b.dataset.act === "reset") {
+        delete d.custom; save(state); renderDays();
+      }
+    };
+  });
+}
+function addDay() {
+  const n = state.days.length + 1;
+  state.days.push({ title: "第 " + n + " 日", stops: [], meals: [], hotel: "", details: [], notes: [] });
+  save(state); renderDays();
+}
+
+/* ---- 行李 ---- */
+function renderPacking() {
+  const box = document.getElementById("packingList");
+  box.innerHTML = "";
+  state.packing.forEach((cat, ci) => {
+    const h = document.createElement("div");
+    h.className = "cat"; h.textContent = cat[0]; box.appendChild(h);
+    cat[1].forEach((item, ii) => {
+      const key = ci + "_" + ii;
+      const row = document.createElement("div");
+      row.className = "check" + (state.done[key] ? " done" : "");
+      row.innerHTML = '<input type="checkbox" ' + (state.done[key] ? "checked" : "") + '><span>' + esc(item) + "</span>";
+      row.querySelector("input").onchange = () => {
+        state.done[key] = row.querySelector("input").checked;
+        row.classList.toggle("done", state.done[key]); save(state);
+      };
+      box.appendChild(row);
+    });
+  });
+}
+
+/* ---- 換錢 ---- */
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+const R = { hkd: 4.5, cny: 5.0 };
+function loadRates() {
+  const a = parseFloat(document.getElementById("rateHkd").value) || R.hkd;
+  const b = parseFloat(document.getElementById("rateCny").value) || R.cny;
+  R.hkd = a; R.cny = b;
+}
+document.getElementById("rateHkd").value = R.hkd;
+document.getElementById("rateCny").value = R.cny;
+function conv() {
+  loadRates();
+  const amt = parseFloat(document.getElementById("amt").value) || 0;
+  const u = document.getElementById("unit").value;
+  let thb = u === "thb" ? amt : u === "hkd" ? amt * R.hkd : amt * R.cny;
+  const hkd = thb / R.hkd, cny = thb / R.cny;
+  document.getElementById("convResult").innerHTML =
+    "泰銖 <b>" + thb.toFixed(0) + "</b> ฿ &nbsp;|&nbsp; 港幣 <b>HK$" + hkd.toFixed(0) + "</b> &nbsp;|&nbsp; 人民幣 <b>¥" + cny.toFixed(0) + "</b>";
+}
+["amt","unit","rateHkd","rateCny"].forEach(id => document.getElementById(id).addEventListener("input", conv));
+function shop() {
+  loadRates();
+  const t = parseFloat(document.getElementById("shopThb").value) || 0;
+  document.getElementById("shopHkd").innerHTML = "≈ HK$" + (t / R.hkd).toFixed(0);
+  document.getElementById("shopCny").innerHTML = "≈ ¥" + (t / R.cny).toFixed(0);
+}
+document.getElementById("shopThb").addEventListener("input", shop);
+
+/* ---- 泰文 ---- */
+const PHRASES = [
+  ["你好（男/女）", "สวัสดีครับ / สวัสดีค่ะ", "sawatdee khrap / kha"],
+  ["多謝", "ขอบคุณ", "khob khun"],
+  ["唔該 / 對唔住", "ขอโทษ", "kho thot"],
+  ["幾多錢？", "เท่าไหร่", "thao rai"],
+  ["太貴喇，平啲啦", "แพงไป ลดหน่อยได้ไหม", "phaeng pai, lot noi dai mai"],
+  ["廁所喺邊？", "ห้องน้ำอยู่ที่ไหน", "hong nam yu thi nai"],
+  ["我要呢個", "เอาอันนี้", "ao an ni"],
+  ["唔要，多謝", "ไม่เอาครับ", "mai ao khrap"],
+  ["可以碌卡嗎？", "ใช้บัตรเครดิตได้ไหม", "chai bat credit dai mai"],
+  ["呢個係咩？", "นี่คืออะไร", "ni khu arai"],
+  ["去機場點去？", "ไปสนามบินยังไง", "pai sa nam bin yang ngai"],
+  ["酒店喺邊？", "โรงแรมอยู่ที่ไหน", "rong raem yu thi nai"],
+  ["幾點？", "กี่โมง", "ki mong"],
+  ["救命！", "ช่วยด้วย", "chuay duay"],
+  ["叫警察！", "เรียกตำรวจ", "riak tamruat"],
+  ["我唔舒服", "ฉันไม่สบาย", "chan mai sabai"],
+  ["水／冰", "น้ำ / น้ำแข็ง", "nam / nam khaeng"],
+  ["辣／唔辣", "เผ็ด / ไม่เผ็ด", "phet / mai phet"],
+  ["好食！", "อร่อยมาก", "a-roi mak"]
+];
+function renderPhrases() {
+  document.getElementById("phrases").innerHTML = PHRASES.map(p =>
+    '<div class="ph"><div><div class="th">' + p[1] + '</div><div class="rp">' + p[2] + '</div></div><div class="zh">' + p[0] + '</div></div>'
+  ).join("");
+}
+
+/* ---- 使費 ---- */
+function renderPeople() { document.getElementById("people").value = state.people; }
+document.getElementById("people").onchange = e => { state.people = e.target.value; save(state); };
+function addExpense() {
+  const item = document.getElementById("exItem").value.trim();
+  const payer = document.getElementById("exPayer").value.trim();
+  const amt = parseFloat(document.getElementById("exAmt").value) || 0;
+  if (!item || !payer || amt <= 0) { alert("請填項目、邊個俾、金額"); return; }
+  state.expenses.push({ item, payer, amt });
+  save(state);
+  document.getElementById("exItem").value = "";
+  document.getElementById("exPayer").value = "";
+  document.getElementById("exAmt").value = "";
+  renderExpense();
+}
+function renderExpense() {
+  const box = document.getElementById("exList");
+  box.innerHTML = "";
+  state.expenses.forEach((x, i) => {
+    const row = document.createElement("div");
+    row.className = "ex-item";
+    row.innerHTML = '<input value="' + esc(x.item) + '" readonly><input value="' + esc(x.payer) + '" readonly><input class="num" value="' + x.amt + '" readonly><button class="del" title="刪除">✕</button>';
+    row.querySelector(".del").onclick = () => { state.expenses.splice(i, 1); save(state); renderExpense(); };
+    box.appendChild(row);
+  });
+  const people = state.people.split(/[,，、\s]+/).filter(Boolean);
+  const total = state.expenses.reduce((s, x) => s + x.amt, 0);
+  const per = people.length ? total / people.length : 0;
+  const paid = {};
+  state.expenses.forEach(x => { paid[x.payer] = (paid[x.payer] || 0) + x.amt; });
+  let lines = people.map(p => {
+    const owe = Math.round((paid[p] || 0) - per);
+    return p + "：俾咗 " + Math.round(paid[p] || 0) + " ฿" + (owe >= 0 ? "，收返 " + owe + " ฿" : "，要俾 " + (-owe) + " ฿");
+  }).join("<br>");
+  document.getElementById("exSum").innerHTML =
+    "總使費 <b>" + total.toFixed(0) + " ฿</b> ・ 每人平均 <b>" + per.toFixed(0) + " ฿</b><br>" + lines;
+}
+
+/* ---- 資訊 ---- */
+const EMERGENCY = [
+  ["報警", "191"], ["救護車", "1669"], ["旅遊警察（英文）", "1155"],
+  ["中國駐泰國大使館", "+66 2 245 0088"], ["領事保護熱線", "+66 85 483 3327"],
+  ["內地全球領事保護", "+86 10 12308"], ["香港入境處 1868", "+852 1868"]
+];
+const OPTIONAL = [
+  ["BAIYOKE SKY 自助餐（午餐 / 晚餐）", "1000 / 1250 銖"],
+  ["人妖歌舞表演", "1000 銖"],
+  ["丹嫩沙水上市場 + 美功鐵路市場", "1000 銖"],
+  ["野生動物園 + 牛仔表演 + 海豚 + 自助午餐", "1800 銖"],
+  ["湄南河遊船 + 自助晚餐", "1500 銖"],
+  ["香薰按摩 SPA", "1500 - 3500 銖"],
+  ["草藥熱敷按摩", "1200 銖"],
+  ["泰式古法按摩", "800 銖"],
+  ["VANA NAVA 水上樂園", "1400 銖"]
+];
+const TIPS = [
+  "⚡ 泰國電壓 220V 同香港一樣，但插頭係兩腳（扁/圓）——一定要帶萬能轉插。",
+  "📱 Sim 卡：機場買 dtac / AIS / True 上網卡，或者用 eSIM。",
+  "💱 兌錢：市區 SuperRich 匯率好過機場；唔好喺街邊同陌生人換。",
+  "🛂 泰國入境卡 TDAC：出發前 3 日內（8月11-13日）上網填妥：tdac.immigration.go.th/arrival-card",
+  "🏛️ 入寺廟要著過膝衫褲、除鞋；唔好摸人頭、唔好用腳指人。",
+  "🚕 搭的士/嘟嘟車：講好價先上車；用 Grab / Bolt 最穩陣。",
+  "⚠️ 大皇宮附近「今日閉館」嘅騙局好常見，唔好理。",
+  "🚰 飲樽裝水，街邊冰要留意衛生。",
+  "👑 唔好批評泰國皇室。",
+  "💵 小費參考：按摩/SPA 每小時約 50-100 銖、行李生每房約 20 銖。",
+  "🏷️ 公司樣辦、目錄、名片隨身帶，隨時傾生意都得。",
+  "📄 護照影印本同電子版分開放，證件唔好放晒喺一個袋。"
+];
+document.getElementById("emergency").innerHTML = EMERGENCY.map(e =>
+  '<div class="ph"><div class="zh">' + e[0] + '</div><div class="rp" style="min-width:0;color:#0f8a6d;font-weight:700">' + e[1] + '</div></div>'
+).join("");
+document.getElementById("optional").innerHTML = OPTIONAL.map(o =>
+  '<div class="ph"><div class="zh">' + o[0] + '</div><div class="rp" style="min-width:0;color:#8b6d4f;font-weight:700">' + o[1] + '</div></div>'
+).join("");
+document.getElementById("tips").innerHTML = TIPS.map(t => '<div class="tip">' + t + "</div>").join("");
+
+renderDays(); renderPacking(); renderPhrases(); renderExpense(); renderPeople();
+conv(); shop();
+</script>
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.protocol === "http:")) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+</script>
+</body>
+</html>

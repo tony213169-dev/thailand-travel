@@ -1,0 +1,12 @@
+{
+  "name": "泰國公司旅行助手",
+  "short_name": "泰國旅行",
+  "start_url": "泰國旅行助手.html",
+  "display": "standalone",
+  "background_color": "#eafaf1",
+  "theme_color": "#0f8a6d",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
