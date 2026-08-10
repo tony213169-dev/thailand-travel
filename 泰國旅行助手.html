@@ -497,6 +497,8 @@ async function loadWeather() {
   }
 }
 loadWeather();
+setInterval(loadWeather, 1800000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) loadWeather(); });
 renderDays(); renderPacking(); renderExpense(); renderPeople();
 conv(); shop();
 </script>
