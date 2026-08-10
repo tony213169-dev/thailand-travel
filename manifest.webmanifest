@@ -1,7 +1,7 @@
 {
   "name": "泰國公司旅行助手",
   "short_name": "泰國旅行",
-  "start_url": "泰國旅行助手.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#eafaf1",
   "theme_color": "#0f8a6d",

@@ -101,7 +101,6 @@
   <button data-page="itinerary" class="on"><span class="ic">🗺️</span>行程</button>
   <button data-page="packing"><span class="ic">🧳</span>行李</button>
   <button data-page="money"><span class="ic">💱</span>換錢</button>
-  <button data-page="thai"><span class="ic">🇹🇭</span>泰文</button>
   <button data-page="expense"><span class="ic">💰</span>使費</button>
   <button data-page="info"><span class="ic">📞</span>資訊</button>
 </nav>
@@ -162,13 +161,6 @@
     </div>
   </section>
 
-  <!-- 泰文 -->
-  <section class="page" id="thai">
-    <div class="card">
-      <h2>🇹🇭 泰文速查（講唔到就俾人睇）</h2>
-      <div id="phrases"></div>
-    </div>
-  </section>
 
   <!-- 使費 -->
   <section class="page" id="expense">
@@ -191,6 +183,10 @@
 
   <!-- 資訊 -->
   <section class="page" id="info">
+    <div class="card">
+      <h2>🌦️ 行程天氣（曼谷・華欣・8/14-18）</h2>
+      <div id="weather"></div>
+    </div>
     <div class="card">
       <h2>📞 緊急電話（泰國）</h2>
       <div id="emergency"></div>
@@ -378,34 +374,6 @@ function shop() {
 }
 document.getElementById("shopThb").addEventListener("input", shop);
 
-/* ---- 泰文 ---- */
-const PHRASES = [
-  ["你好（男/女）", "สวัสดีครับ / สวัสดีค่ะ", "sawatdee khrap / kha"],
-  ["多謝", "ขอบคุณ", "khob khun"],
-  ["唔該 / 對唔住", "ขอโทษ", "kho thot"],
-  ["幾多錢？", "เท่าไหร่", "thao rai"],
-  ["太貴喇，平啲啦", "แพงไป ลดหน่อยได้ไหม", "phaeng pai, lot noi dai mai"],
-  ["廁所喺邊？", "ห้องน้ำอยู่ที่ไหน", "hong nam yu thi nai"],
-  ["我要呢個", "เอาอันนี้", "ao an ni"],
-  ["唔要，多謝", "ไม่เอาครับ", "mai ao khrap"],
-  ["可以碌卡嗎？", "ใช้บัตรเครดิตได้ไหม", "chai bat credit dai mai"],
-  ["呢個係咩？", "นี่คืออะไร", "ni khu arai"],
-  ["去機場點去？", "ไปสนามบินยังไง", "pai sa nam bin yang ngai"],
-  ["酒店喺邊？", "โรงแรมอยู่ที่ไหน", "rong raem yu thi nai"],
-  ["幾點？", "กี่โมง", "ki mong"],
-  ["救命！", "ช่วยด้วย", "chuay duay"],
-  ["叫警察！", "เรียกตำรวจ", "riak tamruat"],
-  ["我唔舒服", "ฉันไม่สบาย", "chan mai sabai"],
-  ["水／冰", "น้ำ / น้ำแข็ง", "nam / nam khaeng"],
-  ["辣／唔辣", "เผ็ด / ไม่เผ็ด", "phet / mai phet"],
-  ["好食！", "อร่อยมาก", "a-roi mak"]
-];
-function renderPhrases() {
-  document.getElementById("phrases").innerHTML = PHRASES.map(p =>
-    '<div class="ph"><div><div class="th">' + p[1] + '</div><div class="rp">' + p[2] + '</div></div><div class="zh">' + p[0] + '</div></div>'
-  ).join("");
-}
-
 /* ---- 使費 ---- */
 function renderPeople() { document.getElementById("people").value = state.people; }
 document.getElementById("people").onchange = e => { state.people = e.target.value; save(state); };
@@ -483,7 +451,53 @@ document.getElementById("optional").innerHTML = OPTIONAL.map(o =>
 ).join("");
 document.getElementById("tips").innerHTML = TIPS.map(t => '<div class="tip">' + t + "</div>").join("");
 
-renderDays(); renderPacking(); renderPhrases(); renderExpense(); renderPeople();
+function wmoIcon(code) {
+  if (code === 0) return "☀️";
+  if (code <= 2) return "🌤️";
+  if (code === 3) return "☁️";
+  if (code === 45 || code === 48) return "🌫️";
+  if (code >= 51 && code <= 57) return "🌦️";
+  if (code >= 61 && code <= 67) return "🌧️";
+  if (code >= 71 && code <= 77) return "🌨️";
+  if (code >= 80 && code <= 82) return "🌧️";
+  if (code >= 95) return "⛈️";
+  return "🌡️";
+}
+const WEATHER_CITIES = [
+  { name: "曼谷", lat: 13.7563, lon: 100.5018 },
+  { name: "華欣", lat: 12.5688, lon: 99.9577 }
+];
+const TRIP_DATES = ["2026-08-14", "2026-08-15", "2026-08-16", "2026-08-17", "2026-08-18"];
+async function loadWeather() {
+  const box = document.getElementById("weather");
+  box.innerHTML = '<div class="tip">⏳ 攞緊天氣資料…（要上網先有）</div>';
+  try {
+    const rows = [];
+    for (const city of WEATHER_CITIES) {
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=" + city.lat + "&longitude=" + city.lon +
+        "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FBangkok&forecast_days=16";
+      const res = await fetch(url);
+      const data = await res.json();
+      const byDate = {};
+      (data.daily.time || []).forEach((t, i) => {
+        byDate[t] = { code: data.daily.weather_code[i], max: data.daily.temperature_2m_max[i], min: data.daily.temperature_2m_min[i], rain: data.daily.precipitation_probability_max[i] };
+      });
+      let chips = "";
+      TRIP_DATES.forEach(dt => {
+        const w = byDate[dt];
+        chips += w
+          ? '<span class="chip2" style="margin:2px;">' + dt.slice(5).replace("-", "/") + " " + wmoIcon(w.code) + " " + Math.round(w.max) + "°/" + Math.round(w.min) + "° 🌧" + (w.rain == null ? 0 : w.rain) + "%</span>"
+          : '<span class="chip2" style="margin:2px;">' + dt.slice(5).replace("-", "/") + " —</span>";
+      });
+      rows.push('<div style="margin-top:6px;"><b>' + city.name + "</b><br>" + chips + "</div>");
+    }
+    box.innerHTML = rows.join("");
+  } catch (e) {
+    box.innerHTML = '<div class="tip">⚠️ 攞唔到天氣（可能離線或者要開 VPN）。開住網再試。</div>';
+  }
+}
+loadWeather();
+renderDays(); renderPacking(); renderExpense(); renderPeople();
 conv(); shop();
 </script>
 <script>
