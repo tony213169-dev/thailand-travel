@@ -1,4 +1,4 @@
-const CACHE = "thailand-trip-v3";
+const CACHE = "thailand-trip-v4";
 const FILES = ["./", "./index.html", "./泰國旅行助手.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
