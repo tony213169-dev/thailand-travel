@@ -94,7 +94,7 @@
 <body>
 <header>
   <h1>🇹🇭 泰國公司旅行助手</h1>
-  <p>《曼谷・華欣》五天團 ・ 2026-08-14 至 08-18 ・ 東瀛遊 EGL</p>
+  <p>《曼谷・華欣》五天團 HT BBNC05 ・ 2026-08-14 至 08-18 ・ 東瀛遊 EGL</p>
 </header>
 
 <nav class="nav" id="nav">
@@ -115,9 +115,18 @@
       <div class="tip">🛂 記住！泰國入境卡 TDAC 要喺出發前 3 日內（<b>8月11-13日</b>）上網填好：tdac.immigration.go.th/arrival-card</div>
     </div>
     <div class="card">
+      <h2>👥 領隊・導遊聯絡（跟最新資料）</h2>
+      <div class="ph"><div><div class="th">香港領隊</div><div class="rp">MR Cheung</div></div><div class="zh">☎ <a href="tel:91209277" style="color:#0f8a6d;font-weight:700">9120 9277</a></div></div>
+      <div class="ph"><div><div class="th">泰國導遊</div><div class="rp">Mr. Chaiwalit 張火</div></div><div class="zh">☎ <a href="tel:0859222128" style="color:#0f8a6d;font-weight:700">085-922-2128</a></div></div>
+    </div>
+    <div class="card">
       <h2>🗺️ 每日行程（詳細版・跟 PDF・可編輯）</h2>
       <div id="days"></div>
       <button class="btn ghost" onclick="addDay()">＋ 加多一日</button>
+    </div>
+    <div class="card">
+      <h2>📝 行程備註</h2>
+      <div class="tip">⚠️ 以上行程及餐膳可能因應當地天氣、交通、航班延誤或其他不可控制情況而有所調動，東瀛遊保留最終調動權利。</div>
     </div>
   </section>
 
@@ -192,6 +201,13 @@
       <div id="emergency"></div>
     </div>
     <div class="card">
+      <h2>📞 撥電小錦囊（領隊提供）</h2>
+      <div class="tip">🇭🇰 泰國撥回香港：<b>001 + 852 + 號碼</b></div>
+      <div class="tip">🇹🇭 香港撥泰國固網：<b>001 + 66 + 2 + 固網號碼</b></div>
+      <div class="tip">📱 香港撥泰國手提：<b>001 + 66 + 手提號碼</b>（唔使打第一個 0）</div>
+      <div class="tip">🏠 泰國當地互打（固網／手提）：只需直撥號碼</div>
+    </div>
+    <div class="card">
       <h2>🎡 自費節目（可自由參加，泰銖）</h2>
       <div id="optional"></div>
     </div>
@@ -203,43 +219,43 @@
 </main>
 
 <script>
-const LS = "thailandTripV2";
+const LS = "thailandTripV3";
 
 function load() { try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch(e) { return {}; } }
 function save(d) { try { localStorage.setItem(LS, JSON.stringify(d)); } catch(e) {} }
 
 let state = load();
 if (!state.days || !state.days.length) state.days = [
-  { title: "8/14（五）第 1 日 — 香港 → 曼谷 → 華欣",
-    stops: ["✈️ CX705 08:00 香港 → 10:00 曼谷（國泰直航）", "🚌 專車前往華欣", "考銳洞", "華欣夜市（輕食：煎蠔餅）"],
-    meals: ["🍳 早餐：航機上", "🍱 午餐：紅燒豬手＋煎蠔餅（早機出發午餐自費）", "🍽️ 晚餐：泰式料理"],
-    hotel: "🏨 Ace of Hua Hin Resort（華欣5星，連續兩晚）",
+  { title: "8/14（五）第 1 日 — 香港 → 曼谷 → 考銳洞 → 華欣",
+    stops: ["✈️ CX705 08:00 香港 → 10:00 曼谷（國泰直航）", "🚌 專車前往華欣", "考銳洞", "華欣夜市 Hua Hin Night Market（晚餐）"],
+    meals: ["🍳 早餐：航機上", "🍱 午餐：自費享用喜愛膳食", "🍽️ 晚餐：紅燒豬手＋泰式煎蠔餅"],
+    hotel: "🏨 Ace of Hua Hin Resort（華欣，第 1 晚）｜1392 Petchkasem Road, Cha-Am, Phetchaburi 76120｜☎ +66(0)32-421-777",
     details: [],
-    notes: ["📌 你哋搭 08:00 早機，即係第一天午餐自費", "📌 因應航班及酒店安排，可能先住宿曼谷後華欣，以當地接待為準"] },
+    notes: ["📌 你哋搭 08:00 早機，中午抵達曼谷，午餐自費。"] },
   { title: "8/15（六）第 2 日 — 華欣",
-    stops: ["華欣古老火車站", "高僧廟「龍普矺」（香火鼎盛）", "Bluport Hua Hin Shopping Mall 自由購物", "下午自由活動（包享用一次下午茶）", "ACE 水耕農場（自費採摘蔬菜）", "Air Space 玻璃屋（網紅打卡點）"],
-    meals: ["🍳 早餐：酒店內自助早餐", "🍱 午餐：自費享用喜愛膳食", "🍽️ 晚餐：Air Space 泰式料理"],
-    hotel: "🏨 Ace of Hua Hin Resort（第二晚）",
+    stops: ["華欣火車站（Hua Hin Railway Station）", "高僧廟「龍普託」（香火鼎盛）", "Bluport Resort Mall 自由購物", "下午自由活動（包享用一次下午茶）", "ACE 水耕農場（自費採摘蔬菜，由廚師烹飪）", "Air Space 玻璃屋（網紅打卡熱點）"],
+    meals: ["🍳 早餐：酒店內", "🍱 午餐：自費享用喜愛膳食", "🍽️ 晚餐：Air Space 泰式料理"],
+    hotel: "🏨 Ace of Hua Hin Resort（第 2 晚）｜1392 Petchkasem Road, Cha-Am, Phetchaburi 76120｜☎ +66(0)32-421-777",
     details: ["💡 Air Space 玻璃屋：以飛航為主題嘅玻璃屋餐廳，曾獲國外建築設計大獎，係華欣超熱門打卡熱點，可以品嚐特色泰式料理。", "💡 ACE 水耕農場：酒店內農場，種植綠橡/紅橡生菜等水耕蔬菜同泰國草藥；自費採摘由廚師按選定菜單烹煮，一盤約 150-200 銖。"],
     notes: [] },
   { title: "8/16（日）第 3 日 — 華欣 → 曼谷",
-    stops: ["拷汪宮歷史公園（七岩地標）", "佛統大塔", "吞武里海鮮生果市場", "Jodd Fairs Ratchada 夜市"],
-    meals: ["🍳 早餐：酒店內自助早餐", "🍱 午餐：檸檬蒸魚＋椰青咖哩海鮮", "🍽️ 晚餐：香脆炸豬腿＋冬陰功湯"],
-    hotel: "🏨 曼谷5星酒店（連續兩晚）：Oakwood Studios Sukhumvit Bangkok / The Berkeley Hotel Pratunam / Jasmine 59 Hotel / Jasmine Resort Hotel",
-    details: ["💡 拷汪宮歷史公園：七岩地標，位於「宮殿山」92米高山之上，泰王拉瑪四世下令建造；園區由皇室大廳、廟宇及塔樓組成，融合泰式、西方新古典主義同中國建築特色。", "💡 吞武里海鮮生果市場：約500間店舖，地道街頭美食、新鮮海產即買即煮，時令水果又甜又多汁。"],
+    stops: ["【七岩地標】拷汪宮歷史公園", "佛統大金塔（Nakhon Pathom）", "吞武里海鮮市場", "文青夜市 Jodd Fairs"],
+    meals: ["🍳 早餐：酒店內", "🍱 午餐：檸檬蒸魚＋椰青咖哩海鮮", "🍽️ 晚餐：泰式東坡肉＋冬陰功湯"],
+    hotel: "🏨 Jasmine 59 Hotel（曼谷，第 1 晚）｜9 Sukhumvit 59 (Boonchana), Sukhumvit Road, Klongtan-Nua, Wattana 10110｜☎ 66(0)2666-9999",
+    details: ["💡 拷汪宮歷史公園：七岩地標，位於「宮殿山」92米高山之上，泰王拉瑪四世下令建造；園區由皇室大廳、廟宇及塔樓組成，融合泰式、西方新古典主義同中國建築特色。", "💡 吞武里海鮮市場：約500間店舖，地道街頭美食、新鮮海產即買即煮，時令水果又甜又多汁。"],
     notes: [] },
   { title: "8/17（一）第 4 日 — 曼谷",
-    stops: ["佛光山寺", "天然乳膠專門店", "GEMS 珠寶城", "Central Park Bangkok（全新地標）"],
-    meals: ["🍳 早餐：酒店內自助早餐", "🍱 午餐：烤鴨＋蝦餅", "🍽️ 晚餐：自費享用喜愛膳食"],
-    hotel: "🏨 曼谷5星酒店（第二晚）",
+    stops: ["佛光山寺", "GEMS 珠寶城", "天然乳膠專門店", "Central Park Bangkok（全新地標）"],
+    meals: ["🍳 早餐：酒店內", "🍱 午餐：烤鴨＋蝦餅", "🍽️ 晚餐：自費享用喜愛膳食"],
+    hotel: "🏨 Jasmine 59 Hotel（第 2 晚）｜9 Sukhumvit 59 (Boonchana), Sukhumvit Road, Klongtan-Nua, Wattana 10110｜☎ 66(0)2666-9999",
     details: ["💡 Central Park Bangkok：2025年9月1日開幕，曼谷核心區最大商業綜合項目，佔地8層，集酒店、商場於一身；最大特色係頂樓空中花園，仲有首次登陸泰國嘅國際餐廳、新概念餐廳，以及全曼谷最多嘅米其林推薦店家，超過550個國際與本土品牌。"],
     notes: [] },
   { title: "8/18（二）第 5 日 — 曼谷 → 香港",
-    stops: ["蜂皇園", "✈️ 17:30 航班前，如有時間去 Central Outlets 自由購物", "✈️ CX708 17:30 曼谷 → 21:30 香港"],
-    meals: ["🍳 早餐：酒店內自助早餐", "🍱 午餐：自費享用喜愛膳食", "🍽️ 晚餐：航機上"],
+    stops: ["蜂皇園（Honey Shop）", "Central Outlets 自由購物", "✈️ CX708 17:30 曼谷 → 21:30 香港"],
+    meals: ["🍳 早餐：酒店內", "🍱 午餐：自費享用喜愛膳食", "🍽️ 晚餐：航機上"],
     hotel: "",
     details: [],
-    notes: ["📌 因航班係 17:30（16:00 之後），會安排去 Central Outlets 自由購物再前往機場"] }
+    notes: ["📌 航班 17:30 起飛，下午會安排去 Central Outlets 自由購物再前往機場。"] }
 ];
 if (!state.packing) state.packing = [
   ["📄 證件", ["護照（+影印本分開放）", "泰國入境卡 TDAC（8/11-13 上網填好）", "簽證/免簽確認", "機票、酒店確認單", "旅遊保險", "公司名片", "緊急聯絡卡"]],
